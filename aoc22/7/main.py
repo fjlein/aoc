@@ -1060,8 +1060,3 @@ delete = list(filter(lambda x: max(dirs) - x <= 40000000, dirs))
 
 print("part one:", sum(small))
 print("part two:", min(delete))
-
-
-
-
-    
