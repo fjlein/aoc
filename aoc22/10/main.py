@@ -142,9 +142,7 @@ V = 0
 X = 1
 s = 0
 
-img = []
-for _ in range(6):
-    img.append([0]*40)
+img = [[0]*40 for _ in range(6)]
 
 for i in input:
     for j in range(len(i.split(" "))):
@@ -161,8 +159,9 @@ for i in input:
     if i[0:4] == "addx":
         X += (int(i[5:]))
 
+print("answer 1:", s)
+print("answer 2:")
 for row in img:
     for e in row:
-        print("O" if e else " ", end="")
+        print("X" if e else " ", end="")
     print("")
-print(s)
