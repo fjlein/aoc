@@ -1,3 +1,5 @@
+import copy
+
 input = """abccccccccccccccccaaccccccccccccccccccccaaaaaaaaaaaaacccccccccccccccccccccccccccccccccccccccccccccccccccccccaaaaaa
 abcccccccccccccaaaaaccccccccccccccccccccaaaaaaaaaaaaaccccccccccccccccccccccccccccccccccccccccccccccccccccccccaaaaa
 abccccccccccccccaaaaaccccccccccccccaaaaacccaaaaaacccccaaccccccccccccccccccccccccccccccccccccccccccccccccccccccaaaa
@@ -41,86 +43,77 @@ abccccccccccaaaaaaccccccccaaaacccccccccccccaaaaaaaaaaaaccccccccccccaaaaccccccccc
 abcccccccccccaaaaacccccccaaaaaaccccccccccaaaaaaaaaaaaaaccccccccccccaaaaccccccccccccccccccccccccccccccccccccccaaaaa"""
 
 
-class Entry():
-    def __init__(self, score):
-        self.score = score
+def get_height(c):
+    if c == "S":
+        return 1
+    if c == "E":
+        return 26
+    return ord(c) - ord("a") + 1
+
+
+class Entry:
+    def __init__(self, c):
+        self.c = c
         self.cost = 0
-        self.path = []
+        self.height = get_height(c)
 
 
-def to_num(c):
-    return ord(c) - 96
-
-
-def transform(input):
-    input = input.split("\n")
+def get_map(i):
+    i = i.split("\n")
     m = []
-    ex = None
-    ey = None
-    for i in range(len(input)):
-        r = []
-        for j in range(len(input[0])):
-            if input[i][j] == "S":
-                r.append(Entry(1))
-                # print("S", j, i)
-            elif input[i][j] == "E":
-                r.append(Entry(26))
-                # print("E", j, i)
-            else:
-                r.append(Entry(to_num(input[i][j])))
-        m.append(r)
+
+    for r in range(len(i)):
+        row = []
+        for c in range(len(i[0])):
+            row.append(Entry(i[r][c]))
+        m.append(row)
     return m
 
 
-
-def solve(input, part):
-    sx = 0
-    sy = 20
-
-    m = transform(input)
+def solve(i, part):
+    m = get_map(i)
 
     def bfs(part):
-        # m = transform(input)
         queue = []
-        for i in range(len(m)):
-            for j in range(len(m[0])):
+
+        for r in range(len(m)):
+            for c in range(len(m[0])):
                 if part == 1:
                     # print("part1")
-                    queue.append([0, 20])
+                    if m[r][c].c == "S":
+                        queue.append([c, r])
                 else:
                     # print("part2")
-                    if m[i][j].score == 1:
-                        queue.append([j, i])
+                    if m[r][c].height == 1:
+                        queue.append([c, r])
 
         seen = []
-        print(len(queue))
         while queue:
             point = queue.pop(0)
             x, y = point
             if point in seen:
                 continue
             seen.append(point)
-            if point == [91, 20]:
-                return m[20][91].cost
+            if m[y][x].c == "E":
+                return m[y][x].cost
 
             ways = []
             # left
-            if x > 0 and (m[y][x - 1].score <= m[y][x].score + 1):
+            if x > 0 and (m[y][x - 1].height <= m[y][x].height + 1):
                 ways.append([x - 1, y])
             # right
-            if x < len(m[1]) - 1 and (m[y][x + 1].score <= m[y][x].score + 1):
+            if x < len(m[1]) - 1 and (m[y][x + 1].height <= m[y][x].height + 1):
                 ways.append([x + 1, y])
-            # print("up check")
-            if y > 0 and (m[y - 1][x].score <= m[y][x].score + 1):
+            # up
+            if y > 0 and (m[y - 1][x].height <= m[y][x].height + 1):
                 ways.append([x, y - 1])
             # down
-            if y < len(m) - 1 and (m[y + 1][x].score <= m[y][x].score + 1):
+            if y < len(m) - 1 and (m[y + 1][x].height <= m[y][x].height + 1):
                 ways.append([x, y + 1])
 
-            # print("w", ways)
             for way in ways:
                 wx, wy = way
-                if not way in queue:
+                if way not in queue:
                     m[wy][wx].cost = m[y][x].cost + 1
                     queue.append(way)
 
@@ -128,4 +121,4 @@ def solve(input, part):
 
 
 print("answer 1:", solve(input, part=1))
-print("answer 1:", solve(input, part=2))
+print("answer 2:", solve(input, part=2))
