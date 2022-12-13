@@ -453,23 +453,21 @@ input = """[[[2],3,[],[]]]
 
 def traverse(left, right):
     if type(left) is int and type(right) is int:
-        if left < right:
-            return True
-        elif right < left:
-            return False
+        if left != right:
+            return left < right
+
     elif type(left) is list and type(right) is list:
         for i in range(min(len(left), len(right))):
             re = traverse(left[i], right[i])
-            if re is None:
-                continue
-            else:
+            if re is not None:
                 return re
-        if len(left) > len(right):
-            return False
-        if len(right) > len(left):
-            return True
+
+        if not len(left) == len(right):
+            return not len(left) > len(right)
+
     elif type(left) is int and type(right) is list:
         return traverse([left], right)
+
     elif type(left) is list and type(right) is int:
         return traverse(left, [right])
 
@@ -486,36 +484,32 @@ def bubble_sort(nums):
 
 def get_list(input, part):
     i = input.split("\n\n")
-    ne = [] if part == 1 else [[[2]], [[6]]]
+    li = [] if part == 1 else [[[2]], [[6]]]
 
     for pair in i:
-        p = pair.split("\n")
-        left = ast.literal_eval(p[0])
-        right = ast.literal_eval(p[1])
+        pair = pair.split("\n")
+        new_pair = [ast.literal_eval(pair[0]), ast.literal_eval(pair[1])]
         if part == 1:
-            ne.append([left, right])
+            li.append(new_pair)
         if part == 2:
-            ne += [left, right]
+            li.extend(new_pair)
 
-    return ne
+    return li
 
 
 def solve(input, part):
-    if part == 1:
-        li = get_list(input, part=1)
+    sol = part - 1
+    li = get_list(input, part)
 
-        s = 0
+    if part == 1:
         for i in range(len(li)):
-            s += (i + 1) if traverse(li[i][0], li[i][1]) else 0
-        return s
+            sol += (i + 1) if traverse(li[i][0], li[i][1]) else 0
     else:
-        li = get_list(input, part=2)
         bubble_sort(li)
-        s = 1
         for i in range(len(li)):
-            if li[i] in [[[2]], [[6]]]:
-                s *= (i + 1)
-        return s
+            sol *= (i + 1) if li[i] in [[[2]], [[6]]] else 1
+
+    return sol
 
 
 print("answer 1:", solve(input, part=1))
