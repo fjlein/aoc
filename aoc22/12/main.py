@@ -52,13 +52,11 @@ class Entry:
 
 def get_map(i):
     i = i.split("\n")
-    m = []
+    m = [[] for _ in range(len(i))]
 
     for r in range(len(i)):
-        row = []
         for c in range(len(i[0])):
-            row.append(Entry(i[r][c]))
-        m.append(row)
+            m[r].append(Entry(i[r][c]))
     return m
 
 
