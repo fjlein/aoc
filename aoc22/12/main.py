@@ -43,19 +43,11 @@ abccccccccccaaaaaaccccccccaaaacccccccccccccaaaaaaaaaaaaccccccccccccaaaaccccccccc
 abcccccccccccaaaaacccccccaaaaaaccccccccccaaaaaaaaaaaaaaccccccccccccaaaaccccccccccccccccccccccccccccccccccccccaaaaa"""
 
 
-def get_height(c):
-    if c == "S":
-        return 1
-    if c == "E":
-        return 26
-    return ord(c) - ord("a") + 1
-
-
 class Entry:
     def __init__(self, c):
         self.c = c
         self.cost = 0
-        self.height = get_height(c)
+        self.height = ord(c) - ord("a") + 1 if c not in ["S", "E"] else (1 if c == "S" else 26)
 
 
 def get_map(i):
@@ -75,19 +67,13 @@ def solve(i, part):
 
     def bfs(part):
         queue = []
+        seen = []
 
         for r in range(len(m)):
             for c in range(len(m[0])):
-                if part == 1:
-                    # print("part1")
-                    if m[r][c].c == "S":
-                        queue.append([c, r])
-                else:
-                    # print("part2")
-                    if m[r][c].height == 1:
-                        queue.append([c, r])
+                if m[r][c].c == "S" or (part == 2 and m[r][c].height == 1):
+                    queue.append([c, r])
 
-        seen = []
         while queue:
             point = queue.pop(0)
             x, y = point
@@ -97,25 +83,12 @@ def solve(i, part):
             if m[y][x].c == "E":
                 return m[y][x].cost
 
-            ways = []
-            # left
-            if x > 0 and (m[y][x - 1].height <= m[y][x].height + 1):
-                ways.append([x - 1, y])
-            # right
-            if x < len(m[1]) - 1 and (m[y][x + 1].height <= m[y][x].height + 1):
-                ways.append([x + 1, y])
-            # up
-            if y > 0 and (m[y - 1][x].height <= m[y][x].height + 1):
-                ways.append([x, y - 1])
-            # down
-            if y < len(m) - 1 and (m[y + 1][x].height <= m[y][x].height + 1):
-                ways.append([x, y + 1])
-
-            for way in ways:
-                wx, wy = way
-                if way not in queue:
-                    m[wy][wx].cost = m[y][x].cost + 1
-                    queue.append(way)
+            for way in [[-1, 0], [1, 0], [0, -1], [0, 1]]:
+                dx, dy = way
+                if 0 <= x + dx <= len(m[1]) - 1 and 0 <= y + dy <= len(m) - 1:
+                    if m[y + dy][x + dx].height <= m[y][x].height + 1 and [x + dx, y + dy] not in queue:
+                        m[y + dy][x + dx].cost = m[y][x].cost + 1
+                        queue.append([x + dx, y + dy])
 
     return bfs(part)
 
