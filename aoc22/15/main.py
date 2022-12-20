@@ -33,7 +33,9 @@ print(manhatten((0, 11), (2, 10)))
 y = 10
 
 for p in pair:
-    s = p[0]
-    b = p[1]
-    print(s,b)
-    dis = manhatten(s,b)
+    sx, sy = p[0]
+    bx, by = p[1]
+    print(p)
+    dis = manhatten(p[0],p[1])
+    if abs(sy - y) <= dis:
+        print("affected")
