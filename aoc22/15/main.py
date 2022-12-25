@@ -38,43 +38,39 @@ def manhatten(a, b):
 
 
 def in_reach(point: (int, int), triplets) -> bool:
-    for (s, b, m) in triplets:
+    for s, _, m in triplets:
         if manhatten(point, s) <= m:
             return True
     return False
 
 
-def part1(triplets):
-    y = 2000000
-
+def part1(triplets, given_y):
     candidates = set()
 
-    for (s, b, d) in triplets:
-        sx, sy = s
-        dis = manhatten(s, b)
-        if abs(sy - y) <= dis:
-            d = abs(dis - abs(sy - y))
-            for i in range(sx - d, sx + d + 1):
-                candidates.add((i, y))
+    for (x, y), b, d in triplets:
+        if abs(y - given_y) <= d:
+            dx = abs(d - abs(y - given_y))
+            for i in range(x - dx, x + dx + 1):
+                candidates.add((i, given_y))
 
-    valid = candidates - {b for (s, b, m) in triplets} - {s for (s, b, m) in triplets}
+    valid = candidates - {b for (s, b, m) in triplets}
 
     return len(valid)
 
 
-def part2(triplets):
-    for (sx, sy), _, m in triplets:
+def part2(triplets, max_size):
+    for (x, y), _, m in triplets:
         d = m + 1
         for i in range(-d, d + 1):
-            new_y = sy + i
-            if not 0 <= new_y <= 4000000:
+            new_y = y + i
+            if not 0 <= new_y <= max_size:
                 continue
-            new_x_1 = sx + abs(d - abs(i))
-            new_x_2 = sx - abs(d - abs(i))
-            if 0 <= new_x_1 <= 4000000:
+            new_x_1 = x + abs(d - abs(i))
+            new_x_2 = x - abs(d - abs(i))
+            if 0 <= new_x_1 <= max_size:
                 if not in_reach((new_x_1, new_y), triplets):
                     return new_x_1 * 4000000 + new_y
-            if 0 <= new_x_2 <= 4000000:
+            if 0 <= new_x_2 <= max_size:
                 if not in_reach((new_x_2, new_y), triplets):
                     return new_x_2 * 4000000 + new_y
 
@@ -82,9 +78,9 @@ def part2(triplets):
 def solve(input, part):
     triplets = get_triplet(input)
     if part == 1:
-        return part1(triplets)
-    if part == 2:
-        return part2(triplets)
+        return part1(triplets, given_y=2000000)
+    else:
+        return part2(triplets, max_size=4000000)
 
 
 print("answer 1:", solve(input, part=1))
