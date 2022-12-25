@@ -47,7 +47,7 @@ def in_reach(point: (int, int), triplets) -> bool:
 def part1(triplets):
     y = 2000000
 
-    yy = set()
+    candidates = set()
 
     for (s, b, d) in triplets:
         sx, sy = s
@@ -55,9 +55,9 @@ def part1(triplets):
         if abs(sy - y) <= dis:
             d = abs(dis - abs(sy - y))
             for i in range(sx - d, sx + d + 1):
-                yy.add((i, y))
+                candidates.add((i, y))
 
-    valid = yy - {b for (s, b, m) in triplets} - {s for (s, b, m) in triplets}
+    valid = candidates - {b for (s, b, m) in triplets} - {s for (s, b, m) in triplets}
 
     return len(valid)
 
