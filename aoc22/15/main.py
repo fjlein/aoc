@@ -45,8 +45,6 @@ def in_reach(point: (int, int), triplets) -> bool:
 
 
 def part1(triplets):
-    sensors = {s for (s, b, m) in triplets}
-    beacons = {b for (s, b, m) in triplets}
     y = 2000000
 
     yy = set()
@@ -59,7 +57,7 @@ def part1(triplets):
             for i in range(sx - d, sx + d + 1):
                 yy.add((i, y))
 
-    valid = yy - beacons - sensors
+    valid = yy - {b for (s, b, m) in triplets} - {s for (s, b, m) in triplets}
 
     return len(valid)
 
