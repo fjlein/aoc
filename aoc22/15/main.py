@@ -33,16 +33,6 @@ def get_triplet(input):
     return triplets
 
 
-def get_triplet_candidates(triplets):
-    pairs = set()
-    for s1, b1, d1 in triplets:
-        for s2, b2, d2 in triplets:
-            if not s1 == s2 and (s2, b2, d2) not in pairs:
-                if manhatten(s1, s2) == d1 + d2 + 2:
-                    pairs.add((s1, b1, d1))
-    return pairs
-
-
 def manhatten(a, b):
     return abs(b[1] - a[1]) + abs(b[0] - a[0])
 
@@ -80,21 +70,39 @@ def part1(triplets, given_y):
     return sum([r - l + 1 - len(list(filter(lambda x: l <= x <= r, beacon_candidates))) for l, r in intervals])
 
 
+def get_formula(a, b):
+    x1, y1 = a
+    x2, y2 = b
+    m = (y2 - y1) / (x2 - x1)
+    return m, y1 - m * x1
+
+
+def get_intersect(u, w):
+    # print("lines=", u, w)
+    a, b = u
+    c, d = w
+    x = (d - b) / (a - c)
+    y = a * x + b
+    return x, y
+
+
 def part2(triplets, max_size):
-    for (x, y), _, m in get_triplet_candidates(triplets):
+    down = set()
+    up = set()
+    for (x, y), _, m in triplets:
         d = m + 1
-        for i in range(-d, d + 1):
-            new_y = y + i
-            if not 0 <= new_y <= max_size:
-                continue
-            new_x_1 = x + abs(d - abs(i))
-            new_x_2 = x - abs(d - abs(i))
-            if 0 <= new_x_1 <= max_size:
-                if not in_reach((new_x_1, new_y), triplets):
-                    return new_x_1 * 4000000 + new_y
-            if 0 <= new_x_2 <= max_size:
-                if not in_reach((new_x_2, new_y), triplets):
-                    return new_x_2 * 4000000 + new_y
+        # up
+        up.add(get_formula((x - d, y), (x, y + d)))
+        up.add(get_formula((x + d, y), (x, y - d)))
+        # down
+        down.add(get_formula((x - d, y), (x, y - d)))
+        down.add(get_formula((x + d, y), (x, y + d)))
+    for line1 in up:
+        for line2 in down:
+            x, y = get_intersect(line1, line2)
+            if x.is_integer() and not in_reach((x, y), triplets):
+                if 0 <= x <= max_size and 0 <= y <= max_size:
+                    return int(x * 4000000 + y)
 
 
 def solve(input, part):
