@@ -33,6 +33,16 @@ def get_triplet(input):
     return triplets
 
 
+def get_triplet_candidates(triplets):
+    pairs = set()
+    for s1, b1, d1 in triplets:
+        for s2, b2, d2 in triplets:
+            if not s1 == s2 and (s2, b2, d2) not in pairs:
+                if manhatten(s1, s2) == d1 + d2 + 2:
+                    pairs.add((s1, b1, d1))
+    return pairs
+
+
 def manhatten(a, b):
     return abs(b[1] - a[1]) + abs(b[0] - a[0])
 
@@ -44,22 +54,39 @@ def in_reach(point: (int, int), triplets) -> bool:
     return False
 
 
+def collapse_intervals(intervals):
+    intervals.sort(key=lambda x: x[0])
+    merged = []
+    for interval in intervals:
+        if not merged or merged[-1][1] < interval[0]:
+            merged.append(interval)
+        else:
+            last = merged.pop()
+            merged.append((last[0], max(last[1], interval[1])))
+    return merged
+
+
 def part1(triplets, given_y):
-    candidates = set()
+    intervals = set()
 
     for (x, y), b, d in triplets:
         if abs(y - given_y) <= d:
             dx = abs(d - abs(y - given_y))
-            for i in range(x - dx, x + dx + 1):
-                candidates.add((i, given_y))
+            intervals.add((x - dx, x + dx))
 
-    valid = candidates - {b for (s, b, m) in triplets}
+    intervals = collapse_intervals(list(intervals))
+    s = 0
+    for l, r in intervals:
+        s += r - l + 1
+        for bx, by in {b for (s, b, m) in triplets}:
+            if by == given_y and l <= bx <= r:
+                s -= 1
 
-    return len(valid)
+    return s
 
 
 def part2(triplets, max_size):
-    for (x, y), _, m in triplets:
+    for (x, y), _, m in get_triplet_candidates(triplets):
         d = m + 1
         for i in range(-d, d + 1):
             new_y = y + i
