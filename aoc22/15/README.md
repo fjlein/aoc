@@ -2,7 +2,7 @@
 
 ### Remark regarding part 1:
 
-For part one I use the fact that I know that the interval on the specific y-level is in fact only one interval and not broken up in multiple ones.
+For part one I use the fact that I know that the interval on the specific y-level is in fact only one interval and not broken up in multiple ones. This can only be known after seeing part 2!
 
 ### Explanation of part 2:
 
