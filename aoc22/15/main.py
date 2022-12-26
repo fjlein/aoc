@@ -67,22 +67,17 @@ def collapse_intervals(intervals):
 
 
 def part1(triplets, given_y):
-    intervals = set()
+    intervals = []
 
     for (x, y), b, d in triplets:
         if abs(y - given_y) <= d:
             dx = abs(d - abs(y - given_y))
-            intervals.add((x - dx, x + dx))
+            intervals.append((x - dx, x + dx))
 
-    intervals = collapse_intervals(list(intervals))
-    s = 0
-    for l, r in intervals:
-        s += r - l + 1
-        for bx, by in {b for (s, b, m) in triplets}:
-            if by == given_y and l <= bx <= r:
-                s -= 1
+    intervals = collapse_intervals(intervals)
+    beacon_candidates = {b[0] for (s, b, m) in triplets if b[1] == given_y}
 
-    return s
+    return sum([r - l + 1 - len(list(filter(lambda x: l <= x <= r, beacon_candidates))) for l, r in intervals])
 
 
 def part2(triplets, max_size):
