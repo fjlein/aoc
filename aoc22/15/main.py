@@ -23,6 +23,10 @@ Sensor at x=3292286, y=2624894: closest beacon is at x=3279264, y=2775610
 Sensor at x=2194423, y=3990859: closest beacon is at x=2275951, y=3717327"""
 
 
+def manhatten(a, b):
+    return abs(b[1] - a[1]) + abs(b[0] - a[0])
+
+
 def get_triplet(input):
     triplets = set()
     for line in input.split("\n"):
@@ -33,10 +37,6 @@ def get_triplet(input):
     return triplets
 
 
-def manhatten(a, b):
-    return abs(b[1] - a[1]) + abs(b[0] - a[0])
-
-
 def in_reach(point: (int, int), triplets) -> bool:
     for s, _, m in triplets:
         if manhatten(point, s) <= m:
@@ -44,64 +44,44 @@ def in_reach(point: (int, int), triplets) -> bool:
     return False
 
 
-def collapse_intervals(intervals):
-    intervals.sort(key=lambda x: x[0])
-    merged = []
-    for interval in intervals:
-        if not merged or merged[-1][1] < interval[0]:
-            merged.append(interval)
-        else:
-            last = merged.pop()
-            merged.append((last[0], max(last[1], interval[1])))
-    return merged
-
-
 def part1(triplets, given_y):
-    intervals = []
-
+    low, high = 0, 0
     for (x, y), b, d in triplets:
         if abs(y - given_y) <= d:
             dx = abs(d - abs(y - given_y))
-            intervals.append((x - dx, x + dx))
-
-    intervals = collapse_intervals(intervals)
-    beacon_candidates = {b[0] for (s, b, m) in triplets if b[1] == given_y}
-
-    return sum([r - l + 1 - len(list(filter(lambda x: l <= x <= r, beacon_candidates))) for l, r in intervals])
-
-
-def get_formula(a, b):
-    x1, y1 = a
-    x2, y2 = b
-    m = (y2 - y1) / (x2 - x1)
-    return m, y1 - m * x1
+            if x - dx < low:
+                low = x - dx
+            if x + dx > high:
+                high = x + dx
+    return high - low + 1 - len({b[0] for (s, b, m) in triplets if b[1] == given_y})
 
 
-def get_intersect(u, w):
-    # print("lines=", u, w)
-    a, b = u
-    c, d = w
-    x = (d - b) / (a - c)
-    y = a * x + b
-    return x, y
+def get_line_formula(point1, point2):
+    m = (point2[1] - point1[1]) / (point2[0] - point1[0])
+    return m, point1[1] - m * point1[0]
+
+
+def get_intersection(line1, line2):
+    x = (line2[1] - line1[1]) / (line1[0] - line2[0])
+    return x, line1[0] * x + line1[1]
+
+
+def get_lines(triplets):
+    up, down = set(), set()
+    for (x, y), _, m in triplets:
+        d = m + 1
+        up |= {get_line_formula((x - d, y), (x, y + d)), get_line_formula((x + d, y), (x, y - d))}
+        down |= {get_line_formula((x - d, y), (x, y - d)), get_line_formula((x + d, y), (x, y + d))}
+    return up, down
 
 
 def part2(triplets, max_size):
-    down = set()
-    up = set()
-    for (x, y), _, m in triplets:
-        d = m + 1
-        # up
-        up.add(get_formula((x - d, y), (x, y + d)))
-        up.add(get_formula((x + d, y), (x, y - d)))
-        # down
-        down.add(get_formula((x - d, y), (x, y - d)))
-        down.add(get_formula((x + d, y), (x, y + d)))
+    up, down = get_lines(triplets)
     for line1 in up:
         for line2 in down:
-            x, y = get_intersect(line1, line2)
-            if x.is_integer() and not in_reach((x, y), triplets):
-                if 0 <= x <= max_size and 0 <= y <= max_size:
+            x, y = get_intersection(line1, line2)
+            if 0 <= x <= max_size and 0 <= y <= max_size and x.is_integer():
+                if not in_reach((x, y), triplets):
                     return int(x * 4000000 + y)
 
 
