@@ -23,8 +23,8 @@ Sensor at x=3292286, y=2624894: closest beacon is at x=3279264, y=2775610
 Sensor at x=2194423, y=3990859: closest beacon is at x=2275951, y=3717327"""
 
 
-def manhatten(a, b):
-    return abs(b[1] - a[1]) + abs(b[0] - a[0])
+def manhatten(point1, point2):
+    return abs(point2[1] - point1[1]) + abs(point2[0] - point1[0])
 
 
 def get_triplet(input):
