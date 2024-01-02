@@ -1,23 +1,23 @@
 def parse(puzzle_input):
     lines = [line.rstrip() for line in puzzle_input.split("\n")]
 
-    res = []
+    data = []
     for line in lines:
         sets = line.split(": ")[1].split("; ")
-        set_result = []
+        sets_in_numbers = []
         for s in sets:
             cubes = s.split(", ")
-            x = [0, 0, 0]
+            cubes_in_numbers = [0, 0, 0]
             for c in cubes:
                 if "red" in c:
-                    x[0] = int(c.split()[0])
+                    cubes_in_numbers[0] = int(c.split()[0])
                 if "green" in c:
-                    x[1] = int(c.split()[0])
+                    cubes_in_numbers[1] = int(c.split()[0])
                 if "blue" in c:
-                    x[2] = int(c.split()[0])
-            set_result.append(x)
-        res.append(set_result)
-    return res
+                    cubes_in_numbers[2] = int(c.split()[0])
+            sets_in_numbers.append(cubes_in_numbers)
+        data.append(sets_in_numbers)
+    return data
 
 
 def part1(data):
@@ -40,9 +40,11 @@ def part1(data):
 def part2(data):
     sum = 0
 
-    for i, game in enumerate(data):
-        sum += max([s[0] for s in game]) * max([s[1]
-                                                for s in game]) * max([s[2] for s in game])
+    for game in data:
+        r = max([s[0] for s in game])
+        g = max([s[1] for s in game])
+        b = max([s[2] for s in game])
+        sum += r * g * b
 
     return sum
 
