@@ -20,17 +20,13 @@ def part1(data):
     sum = 0
 
     for line in data:
-        a = 0
         first = False
         last = False
-        while a < len(line):
-            pre = line[a]
-            suf = line[-a - 1]
-            if not first and pre.isnumeric():
-                first = pre[0]
-            if not last and suf.isnumeric():
-                last = suf[0]
-            a = a + 1
+        for i in range(len(line)):
+            if not first and line[i].isnumeric():
+                first = line[i]
+            if not last and line[-i - 1].isnumeric():
+                last = line[-i - 1]
         sum += int(first + last)
 
     return sum
@@ -38,28 +34,25 @@ def part1(data):
 
 def part2(data):
     sum = 0
+
     for line in data:
-        a = 0
         first = False
         last = False
-        while a < len(line):
-            pre = line[a:]
-            suf = line[-a - 1:]
+        for i in range(len(line)):
             if not first:
-                if pre[0].isnumeric():
-                    first = pre[0]
+                if line[i:][0].isnumeric():
+                    first = line[i:][0]
                 else:
                     for k, v in numbers.items():
-                        if pre.startswith(k):
+                        if line[i:].startswith(k):
                             first = str(v)
             if not last:
-                if suf[0].isnumeric():
-                    last = suf[0]
+                if line[-i - 1:][0].isnumeric():
+                    last = line[-i - 1:][0]
                 else:
                     for k, v in numbers.items():
-                        if suf.startswith(k):
+                        if line[-i - 1:].startswith(k):
                             last = str(v)
-            a = a + 1
         sum += int(first + last)
 
     return sum
