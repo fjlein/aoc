@@ -1,5 +1,4 @@
-import re
-import math
+from time import sleep
 
 
 def parse(puzzle_input):
@@ -9,6 +8,7 @@ def parse(puzzle_input):
         m = []
         for row in category.split("\n")[1:]:
             m.append([int(x) for x in row.split(" ")])
+        m.sort(key=lambda x: x[1])
         maps.append(m)
     return seeds, maps
 
@@ -33,16 +33,11 @@ def part2(data):
     for i, s in enumerate(seeds[::2]):
         ranges.append((s, s+seeds[i*2+1] - 1))
 
-    print(ranges)
-
     for m in maps:
         next_ranges = []
-        print("map", m)
-        print("ranges", ranges)
         while len(ranges) != 0:
             current = ranges.pop()
             seed_from, seed_to = current
-            print("current:", current)
             start_in_map = False
             for row in m:
                 dest, source, l = row
@@ -53,16 +48,21 @@ def part2(data):
                             (seed_from + dest - source, seed_to + dest - source))
                     else:  # partial in map
                         next_ranges.append(
-                            seed_from + dest - source, source + l - 1 + dest - source)
+                            (seed_from + dest - source, source + l - 1 + dest - source))
                         ranges.append((source + l, seed_to))
-            if not start_in_map:  # range start is not in any map
-                # map one to one until first start of map
-                print("hi")
-
+                    break
+            if not start_in_map:
+                if seed_from < m[0][1]:  # start before all maps
+                    if seed_to < m[0][1]:
+                        next_ranges.append(current)
+                    else:
+                        next_ranges.append((seed_from, m[0][1] - 1))
+                        ranges.append((m[0][1], seed_to))
+                else:  # start after all maps
+                    next_ranges.append(current)
         ranges = next_ranges
-        print(ranges)
 
-    return 2
+    return sorted(ranges, key=lambda x: x[0])[0][0]
 
 
 def solve(puzzle_input):
