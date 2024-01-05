@@ -17,20 +17,51 @@ def part1(data):
     seeds, maps = data
     results = []
     for seed in seeds:
-        # print("seed:", seed)
         for m in maps:
             for row in m:
                 dest, source, l = row
-                offset = dest - source
-                if seed >= source and seed <= source + l - 1:
-                    seed += offset
+                if seed >= source and seed < source + l:
+                    seed += dest - source
                     break
-            # print(seed)
         results.append(seed)
     return min(results)
 
 
 def part2(data):
+    seeds, maps = data
+    ranges = []
+    for i, s in enumerate(seeds[::2]):
+        ranges.append((s, s+seeds[i*2+1] - 1))
+
+    print(ranges)
+
+    for m in maps:
+        next_ranges = []
+        print("map", m)
+        print("ranges", ranges)
+        while len(ranges) != 0:
+            current = ranges.pop()
+            seed_from, seed_to = current
+            print("current:", current)
+            start_in_map = False
+            for row in m:
+                dest, source, l = row
+                if seed_from >= source and seed_from < source + l:  # range start is in map
+                    start_in_map = True
+                    if seed_to < source + l:  # completely in map
+                        next_ranges.append(
+                            (seed_from + dest - source, seed_to + dest - source))
+                    else:  # partial in map
+                        next_ranges.append(
+                            seed_from + dest - source, source + l - 1 + dest - source)
+                        ranges.append((source + l, seed_to))
+            if not start_in_map:  # range start is not in any map
+                # map one to one until first start of map
+                print("hi")
+
+        ranges = next_ranges
+        print(ranges)
+
     return 2
 
 
