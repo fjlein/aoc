@@ -16,12 +16,10 @@ def part1(data):
         x1, x2 = t/2 + ((-t/2)**2-d)**(1/2), t/2 - ((-t/2)**2-d)**(1/2)
         low, high = sorted([x1, x2])
         if low.is_integer():
-            low = int(low + 1)
-        low = math.ceil(low)
+            low = low + 1
         if high.is_integer():
-            high = int(high - 1)
-        high = math.floor(high)
-        result *= high - low + 1
+            high = high - 1
+        result *= math.floor(high) - math.ceil(low) + 1
 
     return result
 
