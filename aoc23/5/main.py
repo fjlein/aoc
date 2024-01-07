@@ -19,9 +19,9 @@ def part1(data):
     for seed in seeds:
         for m in maps:
             for row in m:
-                dest, source, l = row
-                if seed >= source and seed < source + l:
-                    seed += dest - source
+                b, a, d = row
+                if seed >= a and seed < a + d:
+                    seed += b - a
                     break
         results.append(seed)
     return min(results)
@@ -37,29 +37,19 @@ def part2(data):
         next_ranges = []
         while len(ranges) != 0:
             current = ranges.pop()
-            seed_from, seed_to = current
-            start_in_map = False
+            s_from, s_to = current
+            if s_from >= m[-1][1] + m[-1][2] or s_to < m[0][1]:
+                next_ranges.append(current)
             for row in m:
-                dest, source, l = row
-                if seed_from >= source and seed_from < source + l:  # range start is in map
-                    start_in_map = True
-                    if seed_to < source + l:  # completely in map
-                        next_ranges.append(
-                            (seed_from + dest - source, seed_to + dest - source))
-                    else:  # partial in map
-                        next_ranges.append(
-                            (seed_from + dest - source, source + l - 1 + dest - source))
-                        ranges.append((source + l, seed_to))
-                    break
-            if not start_in_map:
-                if seed_from < m[0][1]:  # start before all maps
-                    if seed_to < m[0][1]:
-                        next_ranges.append(current)
-                    else:
-                        next_ranges.append((seed_from, m[0][1] - 1))
-                        ranges.append((m[0][1], seed_to))
-                else:  # start after all maps
-                    next_ranges.append(current)
+                b, a, d = row
+                if s_from >= a + d or s_to < a:
+                    continue
+                elif s_from >= a and s_to < a + d:
+                    next_ranges.append((s_from + b - a, s_to + b - a))
+                elif s_from >= a:
+                    ranges.extend([(s_from, a + d - 1), (a + d, s_to)])
+                elif s_to < a + d:
+                    ranges.extend([(s_from, a - 1), (a, s_to)])
         ranges = next_ranges
 
     return sorted(ranges, key=lambda x: x[0])[0][0]
