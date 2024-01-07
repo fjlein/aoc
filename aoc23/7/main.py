@@ -13,55 +13,45 @@ def base_value(hand, cards):
 
 def type_value(hand, cards):
     counts = sorted([hand.count(c) for c in cards], reverse=True)
-    if counts[0] == 5:
+    if counts[0] == 5:  # Five of a kind
         return 7*13**5
-    elif counts[0] == 4:
+    elif counts[0] == 4:  # Four of a kind
         return 6*13**5
-    elif counts[0] == 3 and counts[1] == 2:
+    elif counts[0] == 3 and counts[1] == 2:  # Full house
         return 5*13**5
-    elif counts[0] == 3:
+    elif counts[0] == 3:  # Three of a kind
         return 4*13**5
-    elif counts[0] == 2 and counts[1] == 2:
+    elif counts[0] == 2 and counts[1] == 2:  # Two pair
         return 3*13**5
-    elif counts[0] == 2:
+    elif counts[0] == 2:  # One pair
         return 2*13**5
-    elif counts[4] == 1:
-        return 1*13**5
-
-
-def solve(data, cards):
-    result = 0
-    for i, hand in enumerate(sorted(data, key=lambda x: type_value(x[0]) + base_value(x[0], cards))):
-        result += (i + 1) * int(hand[1])
-    return result
+    return 1*13**5  # High card
 
 
 def type_value_joker(hand, cards):
-    values = []
-    if not "J" in hand:
-        return type_value(hand, cards)
-    for c in cards[1:]:
-        new_hand = hand.replace("J", c)
-        values.append(type_value(new_hand, cards))
-
-    return max(values)
+    return max([(type_value(hand.replace("J", c), cards)) for c in cards])
 
 
-def get_result(sorted_list):
-    result = 0
-    for i, hand in sorted_list:
-        result += (i + 1) * int(hand[1])
-    return result
+def determine_total_winnings(sorted_list):
+    return sum([(i + 1) * int(hand[1]) for i, hand in enumerate(sorted_list)])
 
 
 def part1(data):
     cards = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
-    return get_result(enumerate(sorted(data, key=lambda x: type_value(x[0], cards) + base_value(x[0], cards))))
+
+    def calculate_value(hand):
+        return type_value(hand[0], cards) + base_value(hand[0], cards)
+
+    return determine_total_winnings(sorted(data, key=calculate_value))
 
 
 def part2(data):
     cards = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A']
-    return get_result(enumerate(sorted(data, key=lambda x: type_value_joker(x[0], cards) + base_value(x[0], cards))))
+
+    def calculate_value(hand):
+        return type_value_joker(hand[0], cards) + base_value(hand[0], cards)
+
+    return determine_total_winnings(sorted(data, key=calculate_value))
 
 
 def solve(puzzle_input):
