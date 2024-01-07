@@ -3,15 +3,30 @@ import math
 
 
 def parse(puzzle_input):
-    return 0
+    lines = puzzle_input.split("\n")
+    return [re.findall(r"\d+", l) for l in lines]
 
 
 def part1(data):
-    return 1
+    result = 1
+    times, distances = data
+
+    for i in range(len(times)):
+        t, d = int(times[i]), int(distances[i])
+        x1, x2 = t/2 + ((-t/2)**2-d)**(1/2), t/2 - ((-t/2)**2-d)**(1/2)
+        low, high = sorted([x1, x2])
+        if low.is_integer():
+            low = low + 1
+        if high.is_integer():
+            high = high - 1
+        result *= math.floor(high) - math.ceil(low) + 1
+
+    return result
 
 
 def part2(data):
-    return 2
+    times, distances = data
+    return part1((["".join(times)], ["".join(distances)]))
 
 
 def solve(puzzle_input):
