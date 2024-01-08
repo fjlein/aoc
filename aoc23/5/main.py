@@ -1,6 +1,3 @@
-from time import sleep
-
-
 def parse(puzzle_input):
     seeds = [int(x) for x in puzzle_input.split("\n\n")[0].split(" ")[1:]]
     maps = []

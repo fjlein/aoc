@@ -55,6 +55,3 @@ if __name__ == "__main__":
         puzzle_input = f.read()
     solution1, solution2 = solve(puzzle_input)
     print(f"{solution1}\n{solution2}")
-
-# 6923
-# 529

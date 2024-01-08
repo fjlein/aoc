@@ -1,7 +1,3 @@
-import re
-import math
-
-
 def parse(puzzle_input):
     lines = puzzle_input.split("\n")
     return [(l.split(" ")[0], l.split(" ")[1]) for l in lines]
