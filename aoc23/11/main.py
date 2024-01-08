@@ -25,8 +25,8 @@ def expand_universe(galaxies, spaces_x, spaces_y, n):
     new_galaxies = set()
 
     for (x, y) in galaxies:
-        new_x = spaces_x[0:x].count(0) * n + x - spaces_x[0:x].count(0)
-        new_y = spaces_y[0:y].count(0) * n + y - spaces_y[0:y].count(0)
+        new_x = sum([n if k == 0 else 1 for k in spaces_x[0:x]])
+        new_y = sum([n if k == 0 else 1 for k in spaces_y[0:y]])
         new_galaxies.add((new_x, new_y))
 
     return new_galaxies
