@@ -1,30 +1,53 @@
+import copy
+
+
 def parse(puzzle_input):
-    matrix = {}
-    for y, line in enumerate(puzzle_input.split("\n")):
-        for x, char in enumerate(line):
-            matrix[(x, y)] = char
-    return matrix, len(puzzle_input.split("\n")[0]), len(puzzle_input.split("\n"))
+    return [[*line] for line in puzzle_input.split("\n")]
+
+
+def tilt(matrix, d):
+    matrix = copy.deepcopy(matrix)
+    for y in range(len(matrix) - 1, -1, -1) if d == (0, 1) else range(len(matrix)):
+        for x in range(len(matrix[0]) - 1, -1, -1) if d == (1, 0) else range(len(matrix[0])):
+            pos = (x, y)
+            if matrix[y][x] != "O":
+                continue
+            while 0 <= pos[1] + d[1] < len(matrix) and 0 <= pos[0] + d[0] < len(matrix[0]) and matrix[pos[1] + d[1]][pos[0] + d[0]] == ".":
+                pos = (pos[0] + d[0], pos[1] + d[1])
+            matrix[pos[1]][pos[0]] = matrix[y][x]
+            if pos != (x, y):
+                matrix[y][x] = "."
+    return matrix
+
+
+def get_matrix_value(matrix):
+    return sum((len(matrix) - i) * line.count("O") for i, line in enumerate(matrix))
 
 
 def part1(data):
-    matrix, size_x, size_y = data
-    for y in range(size_y):
-        for x in range(size_x):
-            pos = (x, y)
-            print("cur", pos, matrix.get(pos))
-            if matrix.get(pos) != "O":
-                continue
-            while pos[1] > 0 and matrix.get((x, pos[1] - 1)) == ".":
-                pos = (x, pos[1] - 1)
-            matrix[pos] = matrix[(x, y)]
-            if pos != (x, y):
-                matrix[(x, y)] = "."
+    result_matrix = tilt(data, (0, -1))
+    return get_matrix_value(result_matrix)
 
-    return sum(size_y - y if matrix[((x, y))] == "O" else 0 for (x, y) in matrix)
+
+def apply_cycle(matrix):
+    for d in [(0, -1), (-1, 0), (0, 1), (1, 0)]:
+        matrix = tilt(matrix, d)
+    return matrix
 
 
 def part2(data):
-    return "part2"
+    matrix = data
+    record = []
+
+    n = 0
+    while True:
+        matrix = apply_cycle(matrix)
+        if matrix in record:
+            first = record.index(matrix)
+            result = (1000000000 - first - 1) % (n - first) + first
+            return get_matrix_value(record[result])
+        record.append(matrix)
+        n += 1
 
 
 def solve(puzzle_input):
