@@ -1,6 +1,3 @@
-from itertools import combinations
-
-
 def parse(puzzle_input):
     return [pattern.split("\n") for pattern in puzzle_input.split("\n\n")]
 
