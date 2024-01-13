@@ -54,8 +54,8 @@ def part2(data):
 
 def solve(puzzle_input):
     data = parse(puzzle_input)
-    solution1 = part1(data) == 510273
-    solution2 = part2(data) == 212449
+    solution1 = part1(data)
+    solution2 = part2(data)
 
     return solution1, solution2
 
