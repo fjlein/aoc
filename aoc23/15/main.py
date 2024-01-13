@@ -1,7 +1,3 @@
-import copy
-from time import sleep
-
-
 def parse(puzzle_input):
     return puzzle_input.replace("\n", "").split(",")
 
